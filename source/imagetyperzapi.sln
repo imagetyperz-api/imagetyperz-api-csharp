@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "imagetyperzapi", "imagetyperzapi\imagetyperzapi.csproj", "{014C07B0-44BB-4009-8665-A0256664B86E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "example", "example\example.csproj", "{A7A31E7D-739E-4313-AB6E-C62F2BAD3EF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cli", "cli\cli.csproj", "{6A6C7324-BF5F-4D41-B1EA-1E6CB798CF0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{014C07B0-44BB-4009-8665-A0256664B86E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014C07B0-44BB-4009-8665-A0256664B86E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014C07B0-44BB-4009-8665-A0256664B86E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014C07B0-44BB-4009-8665-A0256664B86E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7A31E7D-739E-4313-AB6E-C62F2BAD3EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7A31E7D-739E-4313-AB6E-C62F2BAD3EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7A31E7D-739E-4313-AB6E-C62F2BAD3EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7A31E7D-739E-4313-AB6E-C62F2BAD3EF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A6C7324-BF5F-4D41-B1EA-1E6CB798CF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A6C7324-BF5F-4D41-B1EA-1E6CB798CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A6C7324-BF5F-4D41-B1EA-1E6CB798CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A6C7324-BF5F-4D41-B1EA-1E6CB798CF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5C1F46B-09C9-4DF3-9AF8-F21994B81A66}
+	EndGlobalSection
+EndGlobal

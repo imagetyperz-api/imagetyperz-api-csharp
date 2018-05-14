@@ -1,0 +1,9 @@
+c:\users\root\source\repos\imagetyperzapi\example\bin\Debug\example.exe
+c:\users\root\source\repos\imagetyperzapi\example\bin\Debug\example.pdb
+c:\users\root\source\repos\imagetyperzapi\example\bin\Debug\imagetyperzapi.dll
+c:\users\root\source\repos\imagetyperzapi\example\bin\Debug\imagetyperzapi.pdb
+c:\users\root\source\repos\imagetyperzapi\example\obj\Debug\example.csprojResolveAssemblyReference.cache
+c:\users\root\source\repos\imagetyperzapi\example\obj\Debug\example.csproj.CoreCompileInputs.cache
+c:\users\root\source\repos\imagetyperzapi\example\obj\Debug\example.csproj.CopyComplete
+c:\users\root\source\repos\imagetyperzapi\example\obj\Debug\example.exe
+c:\users\root\source\repos\imagetyperzapi\example\obj\Debug\example.pdb
