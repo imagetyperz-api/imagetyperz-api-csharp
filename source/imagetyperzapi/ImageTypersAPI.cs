@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace ImageTypers
 {
@@ -15,6 +16,7 @@ namespace ImageTypers
         private static string RECAPTCHA_RETRIEVE_ENDPOINT = "http://captchatypers.com/captchaapi/GetRecaptchaText.ashx";
         private static string BALANCE_ENDPOINT = "http://captchatypers.com/Forms/RequestBalance.ashx";
         private static string BAD_IMAGE_ENDPOINT = "http://captchatypers.com/Forms/SetBadImage.ashx";
+        private static string PROXY_CHECK_ENDPOINT = "http://captchatypers.com/captchaAPI/GetReCaptchaTextJSON.ashx";
 
         private static string CAPTCHA_ENDPOINT_CONTENT_TOKEN = "http://captchatypers.com/Forms/UploadFileAndGetTextNEWToken.ashx";
         private static string CAPTCHA_ENDPOINT_URL_TOKEN = "http://captchatypers.com/Forms/FileUploadAndGetTextCaptchaURLToken.ashx";
@@ -22,6 +24,8 @@ namespace ImageTypers
         private static string RECAPTCHA_RETRIEVE_ENDPOINT_TOKEN = "http://captchatypers.com/captchaapi/GetRecaptchaTextToken.ashx";
         private static string BALANCE_ENDPOINT_TOKEN = "http://captchatypers.com/Forms/RequestBalanceToken.ashx";
         private static string BAD_IMAGE_ENDPOINT_TOKEN = "http://captchatypers.com/Forms/SetBadImageToken.ashx";
+        private static string PROXY_CHECK_ENDPOINT_TOKEN = "http://captchatypers.com/captchaAPI/GetReCaptchaTextTokenJSON.ashx";
+
         private static string USER_AGENT = "csharpAPI1.0";      // user agent used in requests
 
         private string _access_token;
@@ -129,17 +133,21 @@ namespace ImageTypers
         }
 
         #region recaptcha
+
+        //public string submit_recaptcha(string page_url, string sitekey, string proxy = "")
         /// <summary>
         /// Submit recaptcha and get it's captcha ID
         /// Check API docs for more info on how to get page_url and sitekey
         /// </summary>
-        /// <param name="page_url">page url (check API docs)</param>
-        /// <param name="sitekey">site key (check API docs)</param>
-        /// <param name="proxy">IP:Port (optional)</param>
-        /// <param name="proxy_type">ProxyType (optional)</param>
+        /// <param name="d">Dictionary containing submission parameters</param>
         /// <returns></returns>
-        public string submit_recaptcha(string page_url, string sitekey, string proxy = "")
+        public string submit_recaptcha(Dictionary<string, string> d)
         {
+            string page_url = d["page_url"];
+            string sitekey = d["sitekey"];
+            string proxy = "";
+            if (d.ContainsKey("proxy")) proxy = d["proxy"];
+
             // check given vars
             if (string.IsNullOrWhiteSpace(page_url))
             {
@@ -152,36 +160,45 @@ namespace ImageTypers
 
             string url = "";
             // create dict (params)
-            Dictionary<string, string> d = new Dictionary<string, string>();
-            d.Add("action", "UPLOADCAPTCHA");
-            d.Add("pageurl", page_url);
-            d.Add("googlekey", sitekey);
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("action", "UPLOADCAPTCHA");
+            data.Add("pageurl", page_url);
+            data.Add("googlekey", sitekey);
 
             // add proxy params if given
             if (!string.IsNullOrWhiteSpace(proxy))
             {
-                d.Add("proxy", proxy);
+                data.Add("proxy", proxy);
             }
 
             if (!string.IsNullOrWhiteSpace(this._username))
             {
-                d.Add("username", this._username);
-                d.Add("password", this._password);
+                data.Add("username", this._username);
+                data.Add("password", this._password);
                 url = RECAPTCHA_SUBMIT_ENDPOINT;
             }
             else
             {
-                d.Add("token", this._access_token);
+                data.Add("token", this._access_token);
                 url = RECAPTCHA_SUBMIT_ENDPOINT_TOKEN;
             }
 
             // affiliate id
             if (!string.IsNullOrWhiteSpace(this._affiliateid) && this._affiliateid.ToString() != "0")
             {
-                d.Add("affiliateid", this._affiliateid);
+                data.Add("affiliateid", this._affiliateid);
             }
 
-            var post_data = Utils.list_to_params(d);        // transform dict to params
+            // user agent
+            if (d.ContainsKey("user_agent")) data.Add("useragent", d["user_agent"]);
+
+            // v3
+            data.Add("recaptchatype", "0");
+            if (d.ContainsKey("type")) data["recaptchatype"] = d["type"];
+            if (d.ContainsKey("v3_action")) data.Add("captchaaction", d["v3_action"]);
+            if (d.ContainsKey("v3_min_score")) data.Add("score", d["v3_min_score"]);
+
+            var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(url, post_data, USER_AGENT, this._timeout);       // make request
             if (response.Contains("ERROR:"))
             {
@@ -352,6 +369,83 @@ namespace ImageTypers
             }
 
             return response;
+        }
+        /// <summary>
+        /// Tells if proxy was used, with reason, and what proxy worker used exactly
+        /// </summary>
+        /// <param name="captcha_id"></param>
+        /// <returns></returns>
+        public string was_proxy_used(string captcha_id)
+        {
+            // check if captcha is OK
+            if (string.IsNullOrWhiteSpace(captcha_id))
+            {
+                throw new Exception("catpcha ID is null or empty");
+            }
+
+            string url = "";
+            // create dict with params
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            d.Add("action", "GETTEXT");
+            d.Add("captchaid", captcha_id);
+
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                d.Add("username", this._username);
+                d.Add("password", this._password);
+                url = PROXY_CHECK_ENDPOINT;
+            }
+            else
+            {
+                d.Add("token", this._access_token);
+                url = PROXY_CHECK_ENDPOINT_TOKEN;
+            }
+
+            var post_data = Utils.list_to_params(d);        // transform dict to params
+            string response = Utils.POST(url, post_data, USER_AGENT, this._timeout).TrimStart('[').TrimEnd(']');       // make request
+            dynamic x = JObject.Parse(response);
+
+            // check if we have error
+            if(x["Error"] != null)
+            {
+                var e = (string)x["Error"];
+                this._error = e;
+                throw new Exception(e);
+            }
+            
+            var result = (string)x["Result"];
+            var p_client = (string)x["Proxy_client"];
+            var p_worker = (string)x["Proxy_worker"];
+            var reason = (string)x["Proxy_reason"];
+
+            // check if captcha was completed
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                var e = "captcha not completed yet";
+                this._error = e;
+                throw new Exception(e);
+            }
+            // check if proxy client was submitted
+            if (string.IsNullOrWhiteSpace(p_client))
+            {
+                var e = "no, reason: proxy was no sent with recaptcha submission request";
+                this._error = e;
+                throw new Exception(e);
+            }
+            // check for reason, if we have one, client submitted proxy but error returned
+            if (!string.IsNullOrWhiteSpace(reason))
+            {
+                var e = string.Format("no, reason: {0}", reason);
+                this._error = e;
+                throw new Exception(e);
+            }
+            // check if proxy was used successfully
+            if(p_client.Split(':').Length >= 2 && p_client.Equals(p_worker))
+            {
+                return string.Format("yes, used proxy: {0}", p_worker);
+            }
+
+            return "no, reason: unknown";
         }
         #endregion
 

@@ -304,15 +304,13 @@ namespace ImageTypers
 
                     string captcha_id = "";
 
+                    Dictionary<string, string> d = new Dictionary<string, string>();
+                    d.Add("page_url", page_url);
+                    d.Add("sitekey", site_key);
                     // check proxy
-                    if (!string.IsNullOrWhiteSpace(proxy))
-                    {
-                        captcha_id = i.submit_recaptcha(page_url, site_key, proxy);
-                    }
-                    else
-                    {
-                        captcha_id = i.submit_recaptcha(page_url, site_key);
-                    }
+                    if (!string.IsNullOrWhiteSpace(proxy)) d.Add("proxy", proxy);
+                    
+                    captcha_id = i.submit_recaptcha(d);
                     this.show_output(captcha_id);
                     break;
                 case "3":
