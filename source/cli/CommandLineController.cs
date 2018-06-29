@@ -164,15 +164,21 @@ namespace ImageTypers
 
                     string captcha_id = "";
 
+                    Dictionary<string, string> d = new Dictionary<string, string>();
+                    d.Add("page_url", page_url);
+                    d.Add("sitekey", site_key);
+
+                    // v3
+                    if (!string.IsNullOrWhiteSpace(a.get_type())) d.Add("type", a.get_type());
+                    if (!string.IsNullOrWhiteSpace(a.get_v3_action())) d.Add("v3_action", a.get_v3_action());
+                    if (!string.IsNullOrWhiteSpace(a.get_v3_score())) d.Add("v3_min_score", a.get_v3_score());
+
+                    // user agent
+                    if (!string.IsNullOrWhiteSpace(a.get_user_agent())) d.Add("user_agent", a.get_user_agent());
+
                     // check proxy
-                    if (!string.IsNullOrWhiteSpace(proxy))
-                    {
-                        captcha_id = i.submit_recaptcha(page_url, site_key, proxy);
-                    }
-                    else
-                    {
-                        captcha_id = i.submit_recaptcha(page_url, site_key);
-                    }
+                    if (!string.IsNullOrWhiteSpace(proxy)) d.Add("proxy", proxy);
+                    captcha_id = i.submit_recaptcha(d);
                     this.show_output(captcha_id);
                     break;
                 case "3":
@@ -197,6 +203,14 @@ namespace ImageTypers
                         throw new Exception("captchaid is invalid");
                     string response = i.set_captcha_bad(bad_id);        // set it bad
                     this.show_output(response);     // show response
+                    break;
+                case "6":
+                    // get proxy status
+                    string was_used_id = a.get_captcha_id();
+                    if (string.IsNullOrWhiteSpace(was_used_id))
+                        throw new Exception("captchaid is invalid");
+                    string rr = i.was_proxy_used(was_used_id);        // set it bad
+                    this.show_output(rr);     // show response
                     break;
             }
         }

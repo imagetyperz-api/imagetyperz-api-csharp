@@ -22,9 +22,47 @@ namespace ImageTypers
         private string _proxy = "";
         private string _token = "";
 
+        // v3
+        private string _type = "0";
+        private string _v3_action = "";
+        private string _v3_score = "";
+
+        private string _user_agent = "";
+
         private bool _case_sensitive = false;
 
-
+        public void set_user_agent(string user_agent)
+        {
+            this._user_agent = user_agent;
+        }
+        public string get_user_agent()
+        {
+            return this._user_agent;
+        }
+        public void set_v3_score(string score)
+        {
+            this._v3_score = score;
+        }
+        public string get_v3_score()
+        {
+            return this._v3_score;
+        }
+        public void set_v3_action(string action)
+        {
+            this._v3_action = action;
+        }
+        public string get_v3_action()
+        {
+            return this._v3_action;
+        }
+        public void set_type(string type)
+        {
+            this._type = type;
+        }
+        public string get_type()
+        {
+            return this._type;
+        }
         public string get_token()
         {
             return _token;
@@ -243,6 +281,13 @@ namespace ImageTypers
             {
                 this._arguments.set_proxy(d["-proxy"]);
             }
+
+            // v3
+            if (d.ContainsKey("-type")) this._arguments.set_type(d["-type"]);
+            if (d.ContainsKey("-v3_min_score")) this._arguments.set_v3_score(d["-v3_min_score"]);
+            if (d.ContainsKey("-v3_action")) this._arguments.set_v3_action(d["-v3_action"]);
+            // user agent
+            if (d.ContainsKey("-user_agent")) this._arguments.set_user_agent(d["-user_agent"]);
         }
 
         /// <summary>
