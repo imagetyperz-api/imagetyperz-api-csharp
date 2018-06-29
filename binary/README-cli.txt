@@ -15,7 +15,9 @@ Recaptcha (submit) - solve recaptcha; submit page_url and sitekey to our server
 --------------------------------------------------------------------------------------------
 mode = 2
 -t "your_token" -m 2 -pageurl "page_url" -sitekey "sitekey"
--t "your_token" -m 2 -pageurl "page_url" -sitekey "sitekey" -o "output_file" -refid "ref_id" -proxy "IP:Port:[user:pass]"
+-t "your_token" -m 2 -pageurl "page_url" -sitekey "sitekey" -o "output_file" -refid "ref_id" 
+-proxy "IP:Port:[user:pass]" -user_agent "Your user_agent" -type "recaptcha type" 
+-v3_min_score "minimim v3 score" -v3_action "action to use when solving v3"
 
 # read the API docs for more info on proxy
 
@@ -48,6 +50,12 @@ mode = 5
 -t "your_token" -m 5 -captchaid "captcha_id" -o "output_file"
 
 program.exe -u "12" -p "34" -m 5 -captchaid "321"
+
+--------------------------------------------------------------------------------------------
+Check if proxy was used in solving (in case proxy was submitted with recaptcha details)
+--------------------------------------------------------------------------------------------
+mode = 6
+-t "your_token" -m 6 -captchaid "captcha_id"
 ============================================================================================
 
 [*] The -o parameter is optional. The response/reply will be always printed to STDOUT.
