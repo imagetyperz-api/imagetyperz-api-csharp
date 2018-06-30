@@ -4,7 +4,7 @@ imagetyperzapi is a super easy to use bypass C# captcha API wrapper for imagetyp
 
 ## Installation
 
-    Install-Package imagetyperzapi
+    Install-Package imagetyperz-api-latest
 
 or
 
