@@ -71,6 +71,41 @@ namespace ImageTypers
             return s;
         }
         /// <summary>
+        /// GET request
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="post_data"></param>
+        /// <param name="user_agent"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public static string GET(string url, string user_agent, int timeout)
+        {
+            // validate url
+            if (!url.StartsWith("http"))
+            {
+                url = "http://" + url;
+            }
+
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+
+            // set user agent and timeout
+            request.UserAgent = user_agent;
+            request.Timeout = timeout;
+            request.ReadWriteTimeout = timeout;
+
+            request.Accept = "*/*";
+            //request.ServicePoint.Expect100Continue = false;
+            //request.AllowAutoRedirect = false;
+            //request.Proxy = new WebProxy("192.168.1.24", 8080);
+
+            HttpWebResponse response = null;
+            response = (HttpWebResponse)request.GetResponse();
+            string s = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            return s;
+        }
+        /// <summary>
         /// Read local captcha file
         /// </summary>
         /// <param name="captcha_path"></param>

@@ -17,6 +17,8 @@ namespace ImageTypers
         private static string BALANCE_ENDPOINT = "http://captchatypers.com/Forms/RequestBalance.ashx";
         private static string BAD_IMAGE_ENDPOINT = "http://captchatypers.com/Forms/SetBadImage.ashx";
         private static string PROXY_CHECK_ENDPOINT = "http://captchatypers.com/captchaAPI/GetReCaptchaTextJSON.ashx";
+        private static string GEETEST_SUBMIT_ENDPOINT = "http://captchatypers.com/captchaapi/UploadGeeTest.ashx";
+        private static string GEETEST_RETRIEVE_ENDPOINT = "http://captchatypers.com/captchaapi/getrecaptchatext.ashx";
 
         private static string CAPTCHA_ENDPOINT_CONTENT_TOKEN = "http://captchatypers.com/Forms/UploadFileAndGetTextNEWToken.ashx";
         private static string CAPTCHA_ENDPOINT_URL_TOKEN = "http://captchatypers.com/Forms/FileUploadAndGetTextCaptchaURLToken.ashx";
@@ -25,6 +27,7 @@ namespace ImageTypers
         private static string BALANCE_ENDPOINT_TOKEN = "http://captchatypers.com/Forms/RequestBalanceToken.ashx";
         private static string BAD_IMAGE_ENDPOINT_TOKEN = "http://captchatypers.com/Forms/SetBadImageToken.ashx";
         private static string PROXY_CHECK_ENDPOINT_TOKEN = "http://captchatypers.com/captchaAPI/GetReCaptchaTextTokenJSON.ashx";
+        private static string GEETEST_SUBMIT_ENDPOINT_TOKEN = "http://captchatypers.com/captchaapi/UploadGeeTestToken.ashx";
 
         private static string USER_AGENT = "csharpAPI1.0";      // user agent used in requests
 
@@ -36,6 +39,7 @@ namespace ImageTypers
 
         private Captcha _captcha;
         private Recaptcha _recaptcha = null;
+        private Geetest _geetest = null;
 
         private string _error = "";
 
@@ -52,8 +56,8 @@ namespace ImageTypers
             this._timeout = timeout * 1000;
         }
 
-        #region captcha & recaptcha
-        /// <summary>
+        #region captcha / recaptcha / geetest
+        /// <summary> 
         /// Solve normal captcha
         /// </summary>
         /// <param name="captcha">captcha image file (local) or remote file (URL) [remote works only if tokens are used]</param>
@@ -273,7 +277,8 @@ namespace ImageTypers
         {
             try
             {
-                this.retrieve_captcha(captcha_id);          // try to retrieve captcha
+                if (this._geetest != null) this.retrieve_geetest(captcha_id);
+                else this.retrieve_captcha(captcha_id);          // try to retrieve captcha
                 return false;       // no error, we're good
             }
             catch (Exception ex)
@@ -286,6 +291,103 @@ namespace ImageTypers
                 // otherwise throw exception (if different error)
                 throw ex;
             }
+        }
+        #endregion
+
+        #region geetest
+        /// <summary>
+        /// Submit geetest captcha
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public string submit_geetest(Dictionary<string, string> d)
+        {
+            string url = "";
+
+            if(!d.ContainsKey("domain")) throw new Exception("domain is missing");
+            if (!d.ContainsKey("challenge")) throw new Exception("challenge is missing");
+            if (!d.ContainsKey("gt")) throw new Exception("gt is missing");
+
+            d.Add("action", "UPLOADCAPTCHA");
+            // create URL
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                d.Add("username", this._username);
+                d.Add("password", this._password);
+                url = GEETEST_SUBMIT_ENDPOINT;
+            }
+            else
+            {
+                d.Add("token", this._access_token);
+                url = GEETEST_SUBMIT_ENDPOINT_TOKEN;
+            }
+
+            // affiliate id
+            if (!string.IsNullOrWhiteSpace(this._affiliateid) && this._affiliateid.ToString() != "0")
+            {
+                d.Add("affiliateid", this._affiliateid);
+            }
+
+            var post_data = Utils.list_to_params(d);        // transform dict to params
+            var full_url = string.Format("{0}?{1}", url, post_data);
+            string response = Utils.GET(full_url, USER_AGENT, this._timeout);       // make request
+            if (response.Contains("ERROR:"))
+            {
+                var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
+                this._error = response_err;
+                throw new Exception(response_err);
+            }
+
+            // set as recaptcha [id] response and return
+            var r = new Geetest(response);
+            this._geetest = r;
+            return this._geetest.captcha_id();        // return captcha id
+        }
+
+        /// <summary>
+        /// Get geetest response
+        /// </summary>
+        /// <param name="captcha_id"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> retrieve_geetest(string captcha_id)
+        {
+            // check if ID is OK
+            if (string.IsNullOrWhiteSpace(captcha_id))
+            {
+                throw new Exception("captcha ID is null or empty");
+            }
+
+            string url = "";
+            // init params object
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            d.Add("action", "GETTEXT");
+            d.Add("captchaid", captcha_id);
+
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                d.Add("username", this._username);
+                d.Add("password", this._password);
+                url = GEETEST_RETRIEVE_ENDPOINT;
+            }
+            else
+            {
+                d.Add("token", this._access_token);
+                url = GEETEST_RETRIEVE_ENDPOINT;
+            }
+
+            var post_data = Utils.list_to_params(d);        // transform dict to params
+            var full_url = string.Format("{0}?{1}", url, post_data);
+            string response = Utils.GET(full_url, USER_AGENT, this._timeout);       // make request
+            if (response.Contains("ERROR:"))
+            {
+                var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
+                this._error = response_err;
+                throw new Exception(response_err);
+            }
+
+            // set as recaptcha [id] response and return
+            this._geetest.set_response(response);
+            return this._geetest.response();        // return captcha id
         }
         #endregion
         #endregion

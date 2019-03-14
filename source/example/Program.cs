@@ -17,12 +17,11 @@ namespace example
             // -----------------------------------------
             string access_key = "access_token_here";
 
-
             // init imagetypersAPI obj with username and password
             ImageTypersAPI i = new ImageTypersAPI(access_key);
 
             // old school / legacy way
-            //i.set_user_and_password("your_username", "your_password");
+            // i.set_user_and_password("your_username", "your_password");
 
             // balance
             // ------------
@@ -31,9 +30,9 @@ namespace example
 
             // captcha image
             // ==========================================================================================
-            //Console.WriteLine("Solving image captcha ...");
-            //string captcha_image_text = i.solve_captcha("captcha.jpg");
-            //Console.WriteLine(string.Format("Captcha text: {0}", captcha_image_text));
+            Console.WriteLine("Solving image captcha ...");
+            string captcha_image_text = i.solve_captcha("captcha.jpg");
+            Console.WriteLine(string.Format("Captcha text: {0}", captcha_image_text));
 
             // ==========================================================================================
             // recaptcha
@@ -59,11 +58,32 @@ namespace example
             // retrieve
             // ---------
             while (i.in_progress(captcha_id)) System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds and retry
+            string gresponse = i.retrieve_captcha(captcha_id);
+            Console.WriteLine(string.Format("Recaptcha response: {0}", gresponse));
 
-            // we got a response at this point
-            // ---------------------------------
-            string recaptcha_response = i.retrieve_captcha(captcha_id);     // get the response
-            Console.WriteLine(string.Format("Recaptcha response: {0}", recaptcha_response));
+            // Geetest
+            // ----------
+            // create params dict
+            //Dictionary<string, string> dg = new Dictionary<string, string>();
+            //dg.Add("domain", "geetest captcha domain");
+            //dg.Add("challenge", "geetest captcha challenge");
+            //dg.Add("gt", "geetest captcha gt");
+            ////d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+            ////d.Add("user_agent", "Your user agent"); // optional
+
+            //string geetest_id = i.submit_geetest(dg);
+            //Console.WriteLine(string.Format("Geetest captcha id: {0}", geetest_id));
+            //Console.WriteLine("Waiting for geetest captcha to be solved ...");
+
+            //// retrieve
+            //// ---------
+            //while (i.in_progress(geetest_id)) System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds and retry
+
+            //// we got a response at this point
+            //// ---------------------------------
+            //Dictionary<string, string> geetest_response = i.retrieve_geetest(geetest_id);     // get the response
+            //Console.WriteLine(string.Format("Geetest response: {0} - {1} - {2}", geetest_response["challenge"], 
+            //    geetest_response["validate"], geetest_response["seccode"]));
 
             // Other examples
             // ----------------

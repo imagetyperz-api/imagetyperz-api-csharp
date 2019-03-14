@@ -36,7 +36,9 @@ string balance = i.account_balance();
 Console.WriteLine(string.format("Balance: {0}", balance));
 ```
 
-**Submit image captcha**
+## Image captcha
+
+### Submit image captcha
 
 ``` csharp
 string captcha_text = i.solve_captcha("captcha.jpg");
@@ -52,7 +54,9 @@ string captcha_text = i.solve_captcha("http://abc.com/captcha.jpg", false);
  For those that are still using username & password, retrieve your access_key from 
  imagetyperz.com
 
-**Submit recaptcha details**
+## reCAPTCHA
+ 
+### Submit recaptcha details
 
 For recaptcha submission there are two things that are required, and some optional parameters
 - page_url
@@ -77,7 +81,7 @@ string captcha_id = i.submit_recaptcha(d);
 This method returns a captchaID. This ID will be used next, to retrieve the g-response, once workers have
 completed the captcha. This takes somewhere between 10-80 seconds.
 
-**Retrieve captcha response**
+### Retrieve captcha response
 
 Once you have the captchaID, you check for it's progress, and later on retrieve the gresponse.
 
@@ -92,6 +96,49 @@ while(i.in_progress(captcha_id))
 // completed at this point
 string recaptcha_response = i.retrieve_captcha(captcha_id);
 ```
+
+## GeeTest
+
+GeeTest is a captcha that requires 3 parameters to be solved:
+- domain
+- challenge
+- gt
+
+The response of this captcha after completion are 3 codes:
+- challenge
+- validate
+- seccode
+
+### Submit GeeTest
+```csharp
+Dictionary<string, string> dg = new Dictionary<string, string>();
+dg.Add("domain", "geetest captcha domain");
+dg.Add("challenge", "geetest captcha challenge");
+dg.Add("gt", "geetest captcha gt");
+//d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+//d.Add("user_agent", "Your user agent"); // optional
+```
+
+Just like reCAPTCHA, you'll receive a captchaID.
+Using the ID, you'll be able to retrieve 3 codes after completion.
+
+Optionally, you can send proxy and user_agent along.
+
+### Retrieve GeeTest codes
+```csharp
+Console.WriteLine(string.Format("Geetest captcha id: {0}", geetest_id));
+Console.WriteLine("Waiting for geetest captcha to be solved ...");
+
+// check for completion
+while (i.in_progress(geetest_id)) System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds and retry
+
+// we got a response at this point
+Dictionary<string, string> geetest_response = i.retrieve_geetest(geetest_id);     // get the response
+Console.WriteLine(string.Format("Geetest response: {0} - {1} - {2}", geetest_response["challenge"], 
+	geetest_response["validate"], geetest_response["seccode"]));
+```
+
+Response will be a string dictionary, which looks like this: `{'challenge': '...', 'validate': '...', 'seccode': '...'}`
 
 ## Other methods/variables
 
