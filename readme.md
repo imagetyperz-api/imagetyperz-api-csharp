@@ -115,8 +115,9 @@ Dictionary<string, string> dg = new Dictionary<string, string>();
 dg.Add("domain", "geetest captcha domain");
 dg.Add("challenge", "geetest captcha challenge");
 dg.Add("gt", "geetest captcha gt");
-//d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
-//d.Add("user_agent", "Your user agent"); // optional
+//dg.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+//dg.Add("user_agent", "Your user agent"); // optional
+string geetest_id = i.submit_geetest(dg);
 ```
 
 Just like reCAPTCHA, you'll receive a captchaID.
