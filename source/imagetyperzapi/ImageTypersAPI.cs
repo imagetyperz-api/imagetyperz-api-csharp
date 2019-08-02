@@ -61,16 +61,21 @@ namespace ImageTypers
         /// Solve normal captcha
         /// </summary>
         /// <param name="captcha">captcha image file (local) or remote file (URL) [remote works only if tokens are used]</param>
-        /// <param name="case_sensitive">case sensitive mode (true or false)</param>
+        /// <param name="optional_parameters">optional parameters for solving image captcha</param>
         /// <returns></returns>
-        public string solve_captcha(string captcha, bool case_sensitive = false)
+        public string solve_captcha(string captcha, Dictionary<string, string> optional_parameters)
         {
             string url, image_data = "";
             // use name value collection in this case
             var d = new Dictionary<string, string>();
             d.Add("action", "UPLOADCAPTCHA");
-            d.Add("chkCase", (case_sensitive) ? "1" : "0");
-            d.Add("affiliated", this._affiliateid);
+
+            // optional parameters
+            if(optional_parameters.Count > 0)
+            {
+                // add optional parameters up
+                foreach(var k in optional_parameters.Keys) d.Add(k, optional_parameters[k]);
+            }
 
             if (!string.IsNullOrWhiteSpace(this._username))
             {

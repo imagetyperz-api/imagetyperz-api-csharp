@@ -41,14 +41,22 @@ Console.WriteLine(string.format("Balance: {0}", balance));
 ### Submit image captcha
 
 ``` csharp
-string captcha_text = i.solve_captcha("captcha.jpg");
+// optional parameters
+Dictionary<string, string> image_params = new Dictionary<string, string>();
+image_params.Add("iscase", "true");         // case sensitive captcha
+image_params.Add("isphrase", "true");       // text contains at least one space (phrase)
+image_params.Add("ismath", "true");         // instructs worker that a math captcha has to be solved
+image_params.Add("alphanumeric", "1");      // 1 - digits only, 2 - letters only
+image_params.Add("minlength", "2");         // captcha text length (minimum)
+image_params.Add("maxlength", "5");         // captcha text length (maximum)
+
+string captcha_text = i.solve_captcha("captcha.jpg", image_params);
 Console.WriteLine(string.format("Captcha text: {0}", captcha_text));
 ```
-2nd argument is a boolean which represents if captcha is case sensitive
 
 **URL instead of captcha image**
 ``` csharp
-string captcha_text = i.solve_captcha("http://abc.com/captcha.jpg", false);
+string captcha_text = i.solve_captcha("http://abc.com/captcha.jpg", image_params);
 ```
 **OBS:** URL instead of image file path works when you're authenticated with access_key.
  For those that are still using username & password, retrieve your access_key from 
@@ -140,6 +148,14 @@ Console.WriteLine(string.Format("Geetest response: {0} - {1} - {2}", geetest_res
 ```
 
 Response will be a string dictionary, which looks like this: `{'challenge': '...', 'validate': '...', 'seccode': '...'}`
+
+## Capy
+
+This captcha requires a `page_url` and `sitekey` in order to be solved by our system.
+Currently, in order to solve a capy captcha, you'll have to use the reCAPTCHA methods and only add `--capy` at the end of the `page_url`.
+Having that up, our system will pick it up as capy. Once workers have solved it, you'll have to use the reCAPTCHA retrieve endpoint, to get the response.
+
+**E.g** Original page url - `https://mysite.com`, capy page url `https://mysite.com--capy`
 
 ## Other methods/variables
 

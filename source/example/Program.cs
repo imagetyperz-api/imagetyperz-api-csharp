@@ -30,8 +30,17 @@ namespace example
 
             // captcha image
             // ==========================================================================================
+            // optional parameters dict
+            Dictionary<string, string> image_params = new Dictionary<string, string>();
+            //image_params.Add("iscase", "true");         // case sensitive captcha
+            //image_params.Add("isphrase", "true");       // text contains at least one space (phrase)
+            //image_params.Add("ismath", "true");         // instructs worker that a math captcha has to be solved
+            //image_params.Add("alphanumeric", "1");      // 1 - digits only, 2 - letters only
+            //image_params.Add("minlength", "2");         // captcha text length (minimum)
+            //image_params.Add("maxlength", "5");         // captcha text length (maximum)
+
             Console.WriteLine("Solving image captcha ...");
-            string captcha_image_text = i.solve_captcha("captcha.jpg");
+            string captcha_image_text = i.solve_captcha("captcha.jpg", image_params);
             Console.WriteLine(string.Format("Captcha text: {0}", captcha_image_text));
 
             // ==========================================================================================
@@ -44,7 +53,7 @@ namespace example
 
             // create params dict
             Dictionary<string, string> d = new Dictionary<string, string>();
-            d.Add("page_url", "page_url_here");
+            d.Add("page_url", "page_url_here");   // add --capy at the end to make it a capy captcha
             d.Add("sitekey", "sitekey_here");
             //d.Add("type", "3");                 // optional
             //d.Add("v3_min_score", "0.1");       // optional
