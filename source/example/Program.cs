@@ -53,7 +53,7 @@ namespace example
 
             // create params dict
             Dictionary<string, string> d = new Dictionary<string, string>();
-            d.Add("page_url", "page_url_here");   // add --capy at the end to make it a capy captcha
+            d.Add("page_url", "page_url_here");   // add --capy or --hcaptcha at the end, to submit capy or hCaptcha
             d.Add("sitekey", "sitekey_here");
             //d.Add("type", "3");                 // optional
             //d.Add("v3_min_score", "0.1");       // optional
