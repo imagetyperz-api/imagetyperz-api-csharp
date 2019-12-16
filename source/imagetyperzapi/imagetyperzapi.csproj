@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Captcha.cs" />
-    <Compile Include="CommandLineController.cs" />
     <Compile Include="Geetest.cs" />
     <Compile Include="ImageTypersAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
