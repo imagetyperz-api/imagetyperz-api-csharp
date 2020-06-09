@@ -79,10 +79,11 @@ For recaptcha submission there are two things that are required, and some option
 Dictionary<string, string> d = new Dictionary<string, string>();
 d.Add("page_url", "example.com");
 d.Add("sitekey", "6FDD-s34g3321-3234fgfh23rv32fgtrrsv3c");
-d.Add("type", "3");                
-d.Add("v3_min_score", "0.1");       
-d.Add("v3_action", "homepage");    
-d.Add("user_agent", "Your user agent");
+d.Add("type", "3");                		// optional
+d.Add("v3_min_score", "0.1");       	// optional
+d.Add("v3_action", "homepage");         // optional
+d.Add("user_agent", "Your user agent"); // optional
+d.Add("data-s", "recaptcha data-s value"); // optional
 
 string captcha_id = i.submit_recaptcha(d);
 ```

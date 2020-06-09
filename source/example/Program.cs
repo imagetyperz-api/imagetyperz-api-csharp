@@ -60,6 +60,7 @@ namespace example
             //d.Add("v3_action", "homepage");     // optional
             //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
             //d.Add("user_agent", "Your user agent"); // optional
+            //d.Add("data-s", "recaptcha data-s value"); // optional
 
             string captcha_id = i.submit_recaptcha(d);
             Console.WriteLine("Waiting for recaptcha to be solved ...");

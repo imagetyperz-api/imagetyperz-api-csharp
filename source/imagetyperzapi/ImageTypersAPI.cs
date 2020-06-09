@@ -206,6 +206,7 @@ namespace ImageTypers
             if (d.ContainsKey("type")) data["recaptchatype"] = d["type"];
             if (d.ContainsKey("v3_action")) data.Add("captchaaction", d["v3_action"]);
             if (d.ContainsKey("v3_min_score")) data.Add("score", d["v3_min_score"]);
+            if (d.ContainsKey("data-s")) data.Add("data-s", d["data-s"]);
 
             var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(url, post_data, USER_AGENT, this._timeout);       // make request
