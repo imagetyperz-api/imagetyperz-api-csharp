@@ -8,8 +8,18 @@ using System.IO;
 
 namespace ImageTypers
 {
-    static class Utils
+    public static class Utils
     {
+        public static void print_response(Dictionary<string, string> d)
+        {
+            Console.WriteLine("Response");
+            Console.WriteLine("--------------------------------");
+            foreach (var k in d.Keys)
+            {
+                Console.WriteLine(String.Format("  \"{0}\" - \"{1}\"", k, d[k]));
+            }
+            Console.WriteLine("--------------------------------");
+        }
         /// <summary>
         /// List to string
         /// </summary>

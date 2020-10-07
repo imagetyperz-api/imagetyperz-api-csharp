@@ -1,112 +1,90 @@
-imagetyperzapi - Imagetyperz API wrapper
+imagetyperz-api-csharp - Imagetyperz API wrapper
 =========================================
-imagetyperzapi is a super easy to use bypass C# captcha API wrapper for imagetyperz.com captcha service
+
+imagetyperzapi is a super easy to use bypass captcha API wrapper for imagetyperz.com captcha service
 
 ## Installation
-
-    Install-Package imagetyperz-api-latest
-
-or
-
     git clone https://github.com/imagetyperz-api/imagetyperz-api-csharp
 
-## How to use?
+## Usage
 
-Add the library as a reference to your project, and use the namespace
+Simply require the module, set the auth details and start using the captcha service:
 
 ``` csharp
 using ImageTypers;
 ```
-Set access_token or username and password (legacy) for authentication
+Set access_token for authentication:
 
 ``` csharp
-string access_key = "your_access_key";
-ImageTyperzAPI i = new ImageTyperzAPI(access_token);
+ImageTypersAPI i = new ImageTypersAPI('your_access_token');
 ```
-legacy authentication, will get deprecated at some point
-``` csharp
-i.set_user_and_password("your_username", "your_password");
-```
-Once you've set your authentication details, you can start using the API
+
+Once you've set your authentication details, you can start using the API.
 
 **Get balance**
 
 ``` csharp
 string balance = i.account_balance();
-Console.WriteLine(string.format("Balance: {0}", balance));
+Console.WriteLine(string.Format("Balance: {0}", balance));
 ```
 
-## Image captcha
+## Solving
+For solving a captcha, it's a two step process:
+- **submit captcha** details - returns an ID
+- use ID to check it's progress - and **get solution** when solved.
 
-### Submit image captcha
+Each captcha type has it's own submission method.
+
+For getting the response, same method is used for all types.
+
+
+### Image captcha
 
 ``` csharp
-// optional parameters
 Dictionary<string, string> image_params = new Dictionary<string, string>();
-image_params.Add("iscase", "true");         // case sensitive captcha
-image_params.Add("isphrase", "true");       // text contains at least one space (phrase)
-image_params.Add("ismath", "true");         // instructs worker that a math captcha has to be solved
-image_params.Add("alphanumeric", "1");      // 1 - digits only, 2 - letters only
-image_params.Add("minlength", "2");         // captcha text length (minimum)
-image_params.Add("maxlength", "5");         // captcha text length (maximum)
-
-string captcha_text = i.solve_captcha("captcha.jpg", image_params);
-Console.WriteLine(string.format("Captcha text: {0}", captcha_text));
+// image_params.Add("iscase", "true");         // case sensitive captcha
+// image_params.Add("isphrase", "true");       // text contains at least one space (phrase)
+// image_params.Add("ismath", "true");         // instructs worker that a math captcha has to be solved
+// image_params.Add("alphanumeric", "1");      // 1 - digits only, 2 - letters only
+// image_params.Add("minlength", "2");         // captcha text length (minimum)
+// image_params.Add("maxlength", "5");         // captcha text length (maximum)
+string captcha_id = i.submit_image("captcha.jpg", image_params);
 ```
+ID received is used to retrieve solution when solved.
 
-**URL instead of captcha image**
-``` csharp
-string captcha_text = i.solve_captcha("http://abc.com/captcha.jpg", image_params);
-```
-**OBS:** URL instead of image file path works when you're authenticated with access_key.
- For those that are still using username & password, retrieve your access_key from 
- imagetyperz.com
+**Observation**
+It works with URL instead of image file too, but authentication has to be done using token.
 
-## reCAPTCHA
- 
-### Submit recaptcha details
+### reCAPTCHA
 
-For recaptcha submission there are two things that are required, and some optional parameters
-- page_url
-- site_key
+For recaptcha submission there are two things that are required.
+- page_url (**required**)
+- site_key (**required**)
 - type - can be one of this 3 values: `1` - normal, `2` - invisible, `3` - v3 (it's optional, defaults to `1`)
 - v3_min_score - minimum score to target for v3 recaptcha `- optional`
 - v3_action - action parameter to use for v3 recaptcha `- optional`
 - proxy - proxy to use when solving recaptcha, eg. `12.34.56.78:1234` or `12.34.56.78:1234:user:password` `- optional`
-- user_agent - User-Agent to use when solving recaptcha `- optional` 
+- user_agent - useragent to use when solve recaptcha `- optional` 
+- data-s - extra parameter used in solving recaptcha `- optional`
 
 ``` csharp
 Dictionary<string, string> d = new Dictionary<string, string>();
-d.Add("page_url", "example.com");
-d.Add("sitekey", "6FDD-s34g3321-3234fgfh23rv32fgtrrsv3c");
-d.Add("type", "3");                		// optional
-d.Add("v3_min_score", "0.1");       	// optional
-d.Add("v3_action", "homepage");         // optional
-d.Add("user_agent", "Your user agent"); // optional
-d.Add("data-s", "recaptcha data-s value"); // optional
-
+d.Add("page_url", "https://your-site.com");
+d.Add("sitekey", "7LrGJmcUABBAALFtIb_FxC0LXm_GwOLyJAfbbUCL");
+// d.Add("type", "3");                 // optional
+// d.Add("v3_min_score", "0.1");       // optional
+// d.Add("v3_action", "homepage");     // optional
+// d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+// d.Add("user_agent", "Your user agent"); // optional
+// d.Add("data-s", "recaptcha data-s value"); // optional
 string captcha_id = i.submit_recaptcha(d);
 ```
-This method returns a captchaID. This ID will be used next, to retrieve the g-response, once workers have
-completed the captcha. This takes somewhere between 10-80 seconds.
+ID will be used to retrieve the g-response, once workers have 
+completed the captcha. This takes somewhere between 10-80 seconds. 
 
-### Retrieve captcha response
+Check **Retrieve response** 
 
-Once you have the captchaID, you check for it's progress, and later on retrieve the gresponse.
-
-The ***in_progress(captcha_id)*** method will tell you if captcha is still being decoded by workers.
-Once it's no longer in progress, you can retrieve the gresponse with ***retrieve_recaptcha(captcha_id)***
-
-``` csharp
-while(i.in_progress(captcha_id))
-{
-    System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds
-}
-// completed at this point
-string recaptcha_response = i.retrieve_captcha(captcha_id);
-```
-
-## GeeTest
+### GeeTest
 
 GeeTest is a captcha that requires 3 parameters to be solved:
 - domain
@@ -118,104 +96,122 @@ The response of this captcha after completion are 3 codes:
 - validate
 - seccode
 
-### Submit GeeTest
-```csharp
-Dictionary<string, string> dg = new Dictionary<string, string>();
-dg.Add("domain", "geetest captcha domain");
-dg.Add("challenge", "geetest captcha challenge");
-dg.Add("gt", "geetest captcha gt");
-//dg.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
-//dg.Add("user_agent", "Your user agent"); // optional
-string geetest_id = i.submit_geetest(dg);
-```
+**Important**
+This captcha requires a **unique** challenge to be sent along with each captcha.
 
-Just like reCAPTCHA, you'll receive a captchaID.
-Using the ID, you'll be able to retrieve 3 codes after completion.
+```csharp
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("domain", "https://your-site.com");
+d.Add("challenge", "eea8d7d1bd1a933d72a9eda8af6d15d3");
+d.Add("gt", "1a761081b1114c388092c8e2fd7f58bc");
+// d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+// d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_geetest(d);
+```
 
 Optionally, you can send proxy and user_agent along.
 
-### Retrieve GeeTest codes
+### hCaptcha
+
+Requires page_url and sitekey
+
 ```csharp
-Console.WriteLine(string.Format("Geetest captcha id: {0}", geetest_id));
-Console.WriteLine("Waiting for geetest captcha to be solved ...");
-
-// check for completion
-while (i.in_progress(geetest_id)) System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds and retry
-
-// we got a response at this point
-Dictionary<string, string> geetest_response = i.retrieve_geetest(geetest_id);     // get the response
-Console.WriteLine(string.Format("Geetest response: {0} - {1} - {2}", geetest_response["challenge"], 
-	geetest_response["validate"], geetest_response["seccode"]));
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("page_url", "https://your-site.com");
+d.Add("sitekey", "8c7062c7-cae6-4e12-96fb-303fbec7fe4f");
+// d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+// d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_hcaptcha(d);
 ```
 
-Response will be a string dictionary, which looks like this: `{'challenge': '...', 'validate': '...', 'seccode': '...'}`
+### Capy
 
-## Capy & hCaptcha
+Requires page_url and sitekey
 
-This are two different captcha types, but both are similar to reCAPTCHA. They require a `pageurl` and `sitekey` for solving. hCaptcha is the newest one.
-
-### IMPORTANT
-For this two captcha types, the reCAPTCHA methods are used (explained above), except that there's one small difference.
-
-The `pageurl` parameter should have at the end of it `--capy` added for Capy captcha and `--hcaptcha` for the hCaptcha. This instructs our system it's a capy or hCaptcha. It will be changed in the future, to have it's own endpoints.
-
-For example, if you were to have the `pageurl` = `https://mysite.com` you would send it as `https://mysite.com--capy` if it's capy or `https://mysite.com--hcaptcha` for hCaptcha. Both require a sitekey too, which is sent as reCAPTCHA sitekey, and response is received as reCAPTCHA response, once again using the reCAPTCHA method.
-
-#### Example
-``` csharp
+```csharp
 Dictionary<string, string> d = new Dictionary<string, string>();
-d.Add("page_url", "example.com--capy");		   // or `domain.com--hcaptcha`
-d.Add("sitekey", "sitekey_here");
+d.Add("page_url", "https://your-site.com");
+d.Add("sitekey", "Fme6hZLjuCRMMC3uh15F52D3uNms5c");
+// d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+// d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_capy(d);
+```
 
-// submit
-string captcha_id = i.submit_recaptcha(d);
+### Tiktok
 
-// retrieve capy
-while(i.in_progress(captcha_id))
+Requires page_url cookie_input
+
+```csharp
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("page_url", "https://tiktok.com");
+// make sure `s_v_web_id` cookie is present
+d.Add("cookie_input", "s_v_web_id:verify_kd6243o_fd449FX_FDGG_1x8E_8NiQ_fgrg9FEIJ3f;tt_webid:612465623570154;tt_webid_v2:7679206562717014313;SLARDAR_WEB_ID:d0314f-ce16-5e16-a066-71f19df1545f;");
+// d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+// d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_tiktok(d);
+```
+
+## Retrieve response
+
+Regardless of the captcha type (and method) used in submission of the captcha, this method is used
+right after to check for it's solving status and also get the response once solved.
+
+It requires one parameter, that's the **captcha ID** gathered from first step.
+
+```python
+response = i.retrieve_response(captcha_id);
+```
+
+```csharp
+string captcha_id = i.submit_recaptcha(d); // works with any captcha type submitted
+Console.WriteLine("Waiting for captcha to be solved...");
+Dictionary<string, string> response = null;
+while (response == null)
 {
-    System.Threading.Thread.Sleep(10000);      // sleep for 10 seconds
+    System.Threading.Thread.Sleep(10000);       // sleep for 10 secons before checking for response
+    response = i.retrieve_response(captcha_id);
 }
-// completed at this point
-string solution = i.retrieve_captcha(captcha_id);
+ImageTypers.Utils.print_response(response);
+```
+The response is a JSON object that looks like this:
+```json
+{
+  "CaptchaId": 176707908, 
+  "Response": "03AGdBq24PBCbwiDRaS_MJ7Z...mYXMPiDwWUyEOsYpo97CZ3tVmWzrB", 
+  "Cookie_OutPut": "", 
+  "Proxy_reason": "", 
+  "Recaptcha score": 0.0, 
+  "Status": "Solved"
+}
 ```
 
 ## Other methods/variables
 
 **Affiliate id**
 
-The constructor accepts a 2nd parameter, as the affiliate id.
+The constructor accepts a 2nd parameter, as the affiliate id. 
 ``` csharp
-ImageTyperzAPI i = new ImageTyperzAPI("your_token", "123");
+ImagetypersAPI i = new ImagetypersAPI(username, password, 123);     // init with affiliate id
 ```
 
-**Get details of proxy for recaptcha**
+**Requests timeout**
 
-In case you submitted the recaptcha with proxy, you can check the status of the proxy, if it was used or not,
-and if not, what the reason was with the following:
-
+Specify timeout for requests made to API
 ``` csharp
-Console.WriteLine(i.was_proxy_used(captcha_id));
+i.set_timeout(10);    // set timeout to 10 seconds
 ```
 
 **Set captcha bad**
 
 When a captcha was solved wrong by our workers, you can notify the server with it's ID,
-so we know something went wrong
+so we know something went wrong.
 
-``` csharp
+``` python
 i.set_captcha_bad(captcha_id);
 ```
 
 ## Examples
-Check the com.example package
-
-## Command-line client
-For those that are looking for a command-line client for windows, check the cli project in the solution
-
-## Binary
-If you don't want to compile your own library, you can check the binary folder for a compiled version.
-**Keep in mind** that this might not be the latest version with every release.
-Binary folder contains both library and command line tool for windows
+Check `example/captcha` folder for examples, for each type of captcha.
 
 ## License
 API library is licensed under the MIT License
@@ -223,8 +219,7 @@ API library is licensed under the MIT License
 ## More information
 More details about the server-side API can be found [here](http://imagetyperz.com)
 
-
 <sup><sub>captcha, bypasscaptcha, decaptcher, decaptcha, 2captcha, deathbycaptcha, anticaptcha, 
 bypassrecaptchav2, bypassnocaptcharecaptcha, bypassinvisiblerecaptcha, captchaservicesforrecaptchav2, 
-recaptchav2captchasolver, googlerecaptchasolver, recaptchasolverpython, recaptchabypassscript</sup></sub>
+recaptchav2captchasolver, googlerecaptchasolver, recaptchasolver-csharp, recaptchabypassscript</sup></sub>
 

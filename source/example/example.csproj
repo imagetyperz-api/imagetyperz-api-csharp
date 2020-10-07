@@ -40,6 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="captcha\Tiktok.cs" />
+    <Compile Include="captcha\Hcaptcha.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="captcha\Capy.cs" />
+    <Compile Include="captcha\Image.cs" />
+    <Compile Include="captcha\Geetest.cs" />
+    <Compile Include="captcha\Recaptcha.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
