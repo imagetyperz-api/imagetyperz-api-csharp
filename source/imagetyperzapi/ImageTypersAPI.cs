@@ -13,6 +13,7 @@ namespace ImageTypers
         // consts
         private static string CAPTCHA_ENDPOINT = "http://captchatypers.com/Forms/UploadFileAndGetTextNEW.ashx";
         private static string RECAPTCHA_SUBMIT_ENDPOINT = "http://captchatypers.com/captchaapi/UploadRecaptchaV1.ashx";
+        private static string RECAPTCHA_ENTERPRISE_SUBMIT_ENDPOINT = "http://captchatypers.com/captchaapi/UploadRecaptchaEnt.ashx";
         private static string BALANCE_ENDPOINT = "http://captchatypers.com/Forms/RequestBalance.ashx";
         private static string BAD_IMAGE_ENDPOINT = "http://captchatypers.com/Forms/SetBadImage.ashx";
         private static string GEETEST_SUBMIT_ENDPOINT = "http://captchatypers.com/captchaapi/UploadGeeTest.ashx";
@@ -177,12 +178,19 @@ namespace ImageTypers
             // user agent
             if (d.ContainsKey("user_agent")) data.Add("useragent", d["user_agent"]);
 
-            // v3
+            // type / enterprise
             data.Add("recaptchatype", "0");
-            if (d.ContainsKey("type")) data["recaptchatype"] = d["type"];
+            if (d.ContainsKey("type"))
+            {
+                data["recaptchatype"] = d["type"];
+                // enterprise
+                if (d["type"].Equals("4") || d["type"].Equals("5")) url = RECAPTCHA_ENTERPRISE_SUBMIT_ENDPOINT;
+                if (d["type"].Equals("5")) data.Add("enterprise_type", "v3");
+            }
             if (d.ContainsKey("v3_action")) data.Add("captchaaction", d["v3_action"]);
             if (d.ContainsKey("v3_min_score")) data.Add("score", d["v3_min_score"]);
             if (d.ContainsKey("data-s")) data.Add("data-s", d["data-s"]);
+            if (d.ContainsKey("cookie_input")) data.Add("cookie_input", d["cookie_input"]);
 
             var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(url, post_data, USER_AGENT, this._timeout);       // make request

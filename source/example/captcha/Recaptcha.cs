@@ -21,12 +21,22 @@ namespace example
             Dictionary<string, string> d = new Dictionary<string, string>();
             d.Add("page_url", "https://your-site.com");
             d.Add("sitekey", "7LrGJmcUABBAALFtIb_FxC0LXm_GwOLyJAfbbUCL");
-            //d.Add("type", "3");                 // optional
+            // reCAPTCHA type(s) - optional, defaults to 1
+            // ---------------------------------------------
+            // 1 - v2
+            // 2 - invisible
+            // 3 - v3
+            // 4 - enterprise v2
+            // 5 - enterprise v3
+            //
+            // d.Add("type", "1");                 // optional
+            //
             //d.Add("v3_min_score", "0.1");       // optional
             //d.Add("v3_action", "homepage");     // optional
             //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
             //d.Add("user_agent", "Your user agent"); // optional
             //d.Add("data-s", "recaptcha data-s value"); // optional
+            //d.Add("cookie_input", "a=b;c=d"); // optional
 
             string captcha_id = i.submit_recaptcha(d);
             Console.WriteLine("Waiting for captcha to be solved...");
