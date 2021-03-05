@@ -158,6 +158,22 @@ d.Add("cookie_input", "s_v_web_id:verify_kd6243o_fd449FX_FDGG_1x8E_8NiQ_fgrg9FEI
 string captcha_id = i.submit_tiktok(d);
 ```
 
+### FunCaptcha
+
+Requires page_url, sitekey and s_url
+
+```csharp
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("page_url", "https://your-site.com");
+d.Add("sitekey", "11111111-1111-1111-1111-111111111111");
+d.Add("s_url", "https://api.arkoselabs.com");
+//d.Add("data", "{\"a\": \"b\"}");   // optional, extra funcaptcha data in JSON format
+//d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+//d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_funcaptcha(d);
+```
+
+
 ## Retrieve response
 
 Regardless of the captcha type (and method) used in submission of the captcha, this method is used
