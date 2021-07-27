@@ -22,6 +22,7 @@ namespace example
             d.Add("domain", "https://your-site.com");
             d.Add("challenge", "eea8d7d1bd1a933d72a9eda8af6d15d3");
             d.Add("gt", "1a761081b1114c388092c8e2fd7f58bc");
+            //d.Add("api_server", "api.geetest.com"); // optional
             //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
             //d.Add("user_agent", "Your user agent"); // optional
 
