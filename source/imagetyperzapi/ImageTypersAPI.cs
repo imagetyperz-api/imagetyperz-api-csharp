@@ -341,6 +341,8 @@ namespace ImageTypers
 
             // user agent
             if (d.ContainsKey("user_agent")) data.Add("useragent", d["user_agent"]);
+            // invisible
+            if (d.ContainsKey("invisible")) data.Add("invisible", "1");
 
             var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(HCAPTCHA_ENDPOINT, post_data, USER_AGENT, this._timeout);       // make request

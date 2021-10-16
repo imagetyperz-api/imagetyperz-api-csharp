@@ -21,6 +21,7 @@ namespace example
             Dictionary<string, string> d = new Dictionary<string, string>();
             d.Add("page_url", "https://your-site.com");
             d.Add("sitekey", "8c7062c7-cae6-4e12-96fb-303fbec7fe4f");
+            //d.put("invisible", "1");              // if captcha is invisible - optional
             //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
             //d.Add("user_agent", "Your user agent"); // optional
 
