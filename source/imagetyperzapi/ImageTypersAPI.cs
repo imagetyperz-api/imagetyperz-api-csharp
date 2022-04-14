@@ -17,6 +17,7 @@ namespace ImageTypers
         private static string BALANCE_ENDPOINT = "http://captchatypers.com/Forms/RequestBalance.ashx";
         private static string BAD_IMAGE_ENDPOINT = "http://captchatypers.com/Forms/SetBadImage.ashx";
         private static string GEETEST_SUBMIT_ENDPOINT = "http://captchatypers.com/captchaapi/UploadGeeTest.ashx";
+        private static string GEETEST_V4_SUBMIT_ENDPOINT = "http://www.captchatypers.com/captchaapi/UploadGeeTestV4.ashx";
 
         private static string HCAPTCHA_ENDPOINT = "http://captchatypers.com/captchaapi/UploadHCaptchaUser.ashx";
         private static string CAPY_ENDPOINT = "http://captchatypers.com/captchaapi/UploadCapyCaptchaUser.ashx";
@@ -226,6 +227,45 @@ namespace ImageTypers
                 d.Add("token", this._access_token);
                 url = GEETEST_SUBMIT_ENDPOINT_TOKEN;
             }
+
+            // affiliate id
+            if (!string.IsNullOrWhiteSpace(this._affiliateid) && this._affiliateid.ToString() != "0")
+            {
+                d.Add("affiliateid", this._affiliateid);
+            }
+
+            var post_data = Utils.list_to_params(d);        // transform dict to params
+            var full_url = string.Format("{0}?{1}", url, post_data);
+            string response = Utils.GET(full_url, USER_AGENT, this._timeout);       // make request
+            if (response.Contains("ERROR:"))
+            {
+                var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
+                throw new Exception(response_err);
+            }
+
+            // set as recaptcha [id] response and return
+            return response;
+        }
+
+        public string submit_geetest_v4(Dictionary<string, string> d)
+        {
+            string url = "";
+
+            if (!d.ContainsKey("domain")) throw new Exception("domain is missing");
+            if (!d.ContainsKey("geetestid")) throw new Exception("geetestid is missing");
+
+            d.Add("action", "UPLOADCAPTCHA");
+            // create URL
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                d.Add("username", this._username);
+                d.Add("password", this._password);
+            }
+            else
+            {
+                d.Add("token", this._access_token);
+            }
+            url = GEETEST_V4_SUBMIT_ENDPOINT;
 
             // affiliate id
             if (!string.IsNullOrWhiteSpace(this._affiliateid) && this._affiliateid.ToString() != "0")

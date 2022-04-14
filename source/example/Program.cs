@@ -19,6 +19,7 @@ namespace example
                 TestRecaptcha.run();
                 // TestImage.run();
                 // TestGeetest.run();
+                // TestGeetestV4.run();
                 // TestCapy.run();
                 // TestHcaptcha.run();
                 // TestTiktok.run();
