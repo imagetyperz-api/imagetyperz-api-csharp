@@ -158,6 +158,11 @@ Dictionary<string, string> d = new Dictionary<string, string>();
 d.Add("page_url", "https://your-site.com");
 d.Add("sitekey", "8c7062c7-cae6-4e12-96fb-303fbec7fe4f");
 // d.put("invisible", "1");              // if captcha is invisible - optional
+
+// extra parameters, useful for enterprise
+// submit userAgent from requests too, when this is used
+// d.Add("HcaptchaEnterprise", "{\"rqdata\": \"value taken from web requests\"}");
+
 // d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
 // d.Add("user_agent", "Your user agent"); // optional
 string captcha_id = i.submit_hcaptcha(d);
@@ -204,6 +209,21 @@ d.Add("s_url", "https://api.arkoselabs.com");
 //d.Add("user_agent", "Your user agent"); // optional
 string captcha_id = i.submit_funcaptcha(d);
 ```
+
+### Task
+
+Requires template_name, page_url and usually variables
+
+```csharp
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("template_name", "Login test page");
+d.Add("page_url", "https://imagetyperz.net/automation/login");
+d.Add("variables", "{\"username\": \"abc\", \"password\": \"paZZW0rd\"}");
+//d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+//d.Add("user_agent", "Your user agent"); // optional
+string captcha_id = i.submit_task(d);
+```
+
 
 
 ## Retrieve response

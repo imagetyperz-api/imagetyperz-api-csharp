@@ -24,6 +24,7 @@ namespace example
                 // TestHcaptcha.run();
                 // TestTiktok.run();
                 // TestFuncaptcha.run();
+                // TestTask.run();
             }
             catch (Exception ex)
             {

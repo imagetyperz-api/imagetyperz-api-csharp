@@ -23,6 +23,7 @@ namespace ImageTypers
         private static string CAPY_ENDPOINT = "http://captchatypers.com/captchaapi/UploadCapyCaptchaUser.ashx";
         private static string TIKTOK_ENDPOINT = "http://captchatypers.com/captchaapi/UploadTikTokCaptchaUser.ashx";
         private static string FUNCAPTCHA_ENDPOINT = "http://captchatypers.com/captchaapi/UploadFunCaptcha.ashx";
+        private static string TASK_ENDPOINT = "http://captchatypers.com/captchaapi/UploadCaptchaTask.ashx";
         private static string RETRIEVE_JSON_ENDPOINT = "http://captchatypers.com/captchaapi/GetCaptchaResponseJson.ashx";
 
         private static string CAPTCHA_ENDPOINT_CONTENT_TOKEN = "http://captchatypers.com/Forms/UploadFileAndGetTextNEWToken.ashx";
@@ -383,6 +384,8 @@ namespace ImageTypers
             if (d.ContainsKey("user_agent")) data.Add("useragent", d["user_agent"]);
             // invisible
             if (d.ContainsKey("invisible")) data.Add("invisible", "1");
+            // enterprise
+            if (d.ContainsKey("HcaptchaEnterprise")) data.Add("HcaptchaEnterprise", d["HcaptchaEnterprise"]);
 
             var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(HCAPTCHA_ENDPOINT, post_data, USER_AGENT, this._timeout);       // make request
@@ -499,6 +502,61 @@ namespace ImageTypers
 
             var post_data = Utils.list_to_params(data);        // transform dict to params
             string response = Utils.POST(FUNCAPTCHA_ENDPOINT, post_data, USER_AGENT, this._timeout);       // make request
+            if (response.Contains("ERROR:"))
+            {
+                var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
+                throw new Exception(response_err);
+            }
+            response = response.Substring(1, response.Length - 2);
+            var y = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(response, new Dictionary<string, string>());
+            return y["CaptchaId"];
+        }
+        
+        public string submit_task(Dictionary<string, string> d)
+        {
+            string page_url = d["page_url"];
+            string template_name = d["template_name"];
+            string proxy = "";
+            if (d.ContainsKey("proxy")) proxy = d["proxy"];
+
+            // check given vars
+            if (string.IsNullOrWhiteSpace(page_url))
+            {
+                throw new Exception("page_url variable is null or empty");
+            }
+            if (string.IsNullOrWhiteSpace(template_name))
+            {
+                throw new Exception("template_name variable is null or empty");
+            }
+            // create dict (params)
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("action", "UPLOADCAPTCHA");
+            data.Add("pageurl", page_url);
+            data.Add("captchatype", "16");
+            data.Add("template_name", template_name);
+            if (d.ContainsKey("variables")) data.Add("variables", d["variables"]);
+
+            // add proxy params if given
+            if (!string.IsNullOrWhiteSpace(proxy))
+            {
+                data.Add("proxy", proxy);
+            }
+
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                data.Add("username", this._username);
+                data.Add("password", this._password);
+            }
+            else data.Add("token", this._access_token);
+
+            // affiliate id
+            if (!string.IsNullOrWhiteSpace(this._affiliateid) && this._affiliateid.ToString() != "0") data.Add("affiliateid", this._affiliateid);
+
+            // user agent
+            if (d.ContainsKey("user_agent")) data.Add("useragent", d["user_agent"]);
+
+            var post_data = Utils.list_to_params(data);        // transform dict to params
+            string response = Utils.POST(TASK_ENDPOINT, post_data, USER_AGENT, this._timeout);       // make request
             if (response.Contains("ERROR:"))
             {
                 var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
