@@ -224,7 +224,17 @@ d.Add("variables", "{\"username\": \"abc\", \"password\": \"paZZW0rd\"}");
 string captcha_id = i.submit_task(d);
 ```
 
+#### Task pushVariable
+Update a variable value while task is running. Useful when dealing with 2FA authentication.
 
+When template reaches an action that uses a variable which wasn't provided with the submission of the task,
+task (while running on worker machine) will wait for variable to be updated through push.
+
+You can use the pushVariables method as many times as you need, even overwriting previously set variables.
+```java
+String code = "24323";
+i.task_push_variables(captcha_id, "{\"twofactor_code\": \"" + code + "\"}");
+```
 
 ## Retrieve response
 

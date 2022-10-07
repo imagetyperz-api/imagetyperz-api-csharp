@@ -24,6 +24,7 @@ namespace ImageTypers
         private static string TIKTOK_ENDPOINT = "http://captchatypers.com/captchaapi/UploadTikTokCaptchaUser.ashx";
         private static string FUNCAPTCHA_ENDPOINT = "http://captchatypers.com/captchaapi/UploadFunCaptcha.ashx";
         private static string TASK_ENDPOINT = "http://captchatypers.com/captchaapi/UploadCaptchaTask.ashx";
+        private static string TASK_PUSH_ENDPOINT = "http://captchatypers.com/CaptchaAPI/SaveCaptchaPush.ashx";
         private static string RETRIEVE_JSON_ENDPOINT = "http://captchatypers.com/captchaapi/GetCaptchaResponseJson.ashx";
 
         private static string CAPTCHA_ENDPOINT_CONTENT_TOKEN = "http://captchatypers.com/Forms/UploadFileAndGetTextNEWToken.ashx";
@@ -600,6 +601,38 @@ namespace ImageTypers
         #endregion
 
         #region others
+        public void task_push_variables(string captcha_id, string pushVariables)
+        {
+            // check if captcha is OK
+            if (string.IsNullOrWhiteSpace(captcha_id))
+            {
+                throw new Exception("catpcha ID is null or empty");
+            }
+
+            // create dict with params
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            d.Add("action", "GETTEXT");
+            d.Add("captchaid", captcha_id);
+            d.Add("pushVariables", pushVariables);
+
+            if (!string.IsNullOrWhiteSpace(this._username))
+            {
+                d.Add("username", this._username);
+                d.Add("password", this._password);
+            }
+            else
+            {
+                d.Add("token", this._access_token);
+            }
+
+            var post_data = Utils.list_to_params(d);        // transform dict to params
+            string response = Utils.POST(TASK_PUSH_ENDPOINT, post_data, USER_AGENT, this._timeout);       // make request
+            if (response.Contains("ERROR:"))
+            {
+                var response_err = response.Split(new string[] { "ERROR:" }, StringSplitOptions.None)[1].Trim();
+                throw new Exception(response_err);
+            }
+        }
         /// <summary>
         /// Get account balance
         /// </summary>

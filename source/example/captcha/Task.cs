@@ -27,6 +27,11 @@ namespace example
 
             string captcha_id = i.submit_task(d);
             Console.WriteLine("Waiting for captcha to be solved...");
+
+            // send pushVariable - update of variable while task is running (e.g 2FA code)
+            // string code = "24323";
+            // i.task_push_variables(captcha_id, "{\"twofactor_code\": \"" + code + "\"}");
+
             Dictionary<string, string> response = null;
             while (response == null)
             {
