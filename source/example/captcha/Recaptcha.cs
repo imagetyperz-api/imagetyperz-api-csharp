@@ -31,6 +31,7 @@ namespace example
             //
             // d.Add("type", "1");                 // optional
             //
+            //d.Add("domain", "www.google.com");  // used in loading reCAPTCHA interface, default: www.google.com (alternative: recaptcha.net) - optional
             //d.Add("v3_min_score", "0.1");       // optional
             //d.Add("v3_action", "homepage");     // optional
             //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional

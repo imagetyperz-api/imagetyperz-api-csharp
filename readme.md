@@ -66,6 +66,7 @@ For recaptcha submission there are two things that are required.
   - `3` - v3
   - `4` - enterprise v2
   - `5` - enterprise v3
+- domain - used in loading of reCAPTCHA interface, default: `www.google.com` (alternative: `recaptcha.net`) - `optional`
 - v3_min_score - minimum score to target for v3 recaptcha `- optional`
 - v3_action - action parameter to use for v3 recaptcha `- optional`
 - proxy - proxy to use when solving recaptcha, eg. `12.34.56.78:1234` or `12.34.56.78:1234:user:password` `- optional`
@@ -78,6 +79,7 @@ Dictionary<string, string> d = new Dictionary<string, string>();
 d.Add("page_url", "https://your-site.com");
 d.Add("sitekey", "7LrGJmcUABBAALFtIb_FxC0LXm_GwOLyJAfbbUCL");
 // d.Add("type", "1");                 // optional
+// d.Add("domain", "www.google.com");  // used in loading reCAPTCHA interface, default: www.google.com (alternative: recaptcha.net) - optional
 // d.Add("v3_min_score", "0.1");       // optional
 // d.Add("v3_action", "homepage");     // optional
 // d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
@@ -157,7 +159,11 @@ Requires page_url and sitekey
 Dictionary<string, string> d = new Dictionary<string, string>();
 d.Add("page_url", "https://your-site.com");
 d.Add("sitekey", "8c7062c7-cae6-4e12-96fb-303fbec7fe4f");
-// d.put("invisible", "1");              // if captcha is invisible - optional
+
+// d.Add("invisible", "1");              // if captcha is invisible - optional
+
+// domain used in loading of hcaptcha interface, default: hcaptcha.com - optional
+// d.Add("domain", "hcaptcha.com");
 
 // extra parameters, useful for enterprise
 // submit userAgent from requests too, when this is used
@@ -208,6 +214,23 @@ d.Add("s_url", "https://api.arkoselabs.com");
 //d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
 //d.Add("user_agent", "Your user agent"); // optional
 string captcha_id = i.submit_funcaptcha(d);
+```
+
+### Turnstile (Cloudflare)
+
+Requires page_url, sitekey
+
+```csharp
+Dictionary<string, string> d = new Dictionary<string, string>();
+d.Add("page_url", "https://your-site.com");
+d.Add("sitekey", "0x4ABBBBAABrfvW5vKbx11FZ");
+//d.Add("domain", "challenges.cloudflare.com"); // domain used in loading turnstile interface, default: challenges.cloudflare.com - optional
+//d.Add("action", "homepage");                  // used in loading turnstile interface, similar to reCAPTCHA - optional
+//d.Add("cdata", "your cdata");                 // used in loading turnstile interface - optional
+//d.Add("proxy", "126.45.34.53:123"); // or with auth 126.45.34.53:123:user:pass - optional
+//d.Add("user_agent", "Your user agent"); // optional
+
+string captcha_id = i.submit_turnstile(d);
 ```
 
 ### Task
@@ -264,8 +287,7 @@ The response is a JSON object that looks like this:
   "CaptchaId": 176707908, 
   "Response": "03AGdBq24PBCbwiDRaS_MJ7Z...mYXMPiDwWUyEOsYpo97CZ3tVmWzrB", 
   "Cookie_OutPut": "", 
-  "Proxy_reason": "", 
-  "Recaptcha score": 0.0, 
+  "Proxy_reason": "",
   "Status": "Solved"
 }
 ```
